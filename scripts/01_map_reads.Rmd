@@ -1,0 +1,18 @@
+---
+title: "01_Map_Reads"
+author: "Julin Maloof"
+date: "2023-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 01 Map Reads
+
+Script to map the RNAseq reads to a genomic reference.  I will use John's S. div Hifi ASM.  
+
+Assembly is on Box at https://ucdavis.app.box.com/folder/190583930929
+
+Assembly is on LSSC0 at `/share/malooflab/ref_genomes/S_diversifolious/Sdiv.2023HiFiasm`
