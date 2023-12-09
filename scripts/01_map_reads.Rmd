@@ -52,7 +52,7 @@ for f in $(ls)
     newname=$(echo $f | sed -E "s/r(1|2)\.(.*)\.fq.gz/\\2_R\\1_.fastq.gz/")
     echo "old name: "$f
     echo "new name: "$newname
-    #mv $f $newname
+    mv $f $newname
   done
 ```
 
@@ -79,7 +79,7 @@ find   /share/malooflab/Fastqs/Dimensions/hydrothermal_apex_2023-07-24/ | grep -
 
 List of Read 1 files for mapping.
 ```{bash}
-cd /share/malooflab/Julin/git/Strep-tort-vernalization/intermediate
+cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate
 
 find /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20-apex1-redo/good | grep -E "_R1_.fastq.gz" > R1_fastqs.txt
 

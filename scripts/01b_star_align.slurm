@@ -23,9 +23,9 @@ module load star/2.7.10b
 
 ## Set up Environment and variables
 
-cd /share/malooflab/Julin/git/Strep-tort-vernalization/intermediate
+cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate
 
-out_dir=/share/malooflab/Julin/git/Strep-tort-vernalization/intermediate/bams
+out_dir=/share/malooflab/Julin/git/S_tort-vernalization/intermediate/bams
 
 echo "My SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 
