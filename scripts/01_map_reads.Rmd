@@ -21,24 +21,77 @@ Assembly is on LSSC0 at `/share/malooflab/ref_genomes/S_diversifolious/Sdiv.2023
 
 ## Reads info
 
-Apex libraries were sequenced in three pools.  There was an error made in sequencing Apex1--it was combined with another library that had incompatible indexes, so many (but not all) samples were clobbered.  It was resequences later.
+Apex libraries were sequenced in three pools.  There was an error made in sequencing Apex1--it was combined with another library that had incompatible indexes, so many (but not all) samples were clobbered.  It was resequenced later.
 
-Location of Apex2 and Apex3 round 1 reads:
+### Location of Apex2 and Apex3 round 1 reads:
 
   /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20
-  # Note there are seed reads in there as well, so take care when specifiying files
+  # Note there are seed reads in there as well, so take care when specifying files
   
-Location of Apex1 round 1 reads:
+These reads have file names like `Apex3_yo1-24_i0_S227_L002_R1_001.fastq.gz`
+
+Retrieve read 1 files with:
+```{bash}
+find /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20 | grep -E "Apex.*_R1_.*fastq\.gz$" 
+```
+
+
+### Location of Apex1 round 1 reads:
 
   /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20-apex1-redo/good
+  
+These reads have file names like `r1.bhr-02_i0.fq.gz`
 
-Location of round 2 reads:
+Rename these to move read name to end, like other files:
+
+```{bash}
+cd /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20-apex1-redo/good
+
+for f in $(ls)
+  do
+    newname=$(echo $f | sed -E "s/r(1|2)\.(.*)\.fq.gz/\\2_R\\1_.fastq.gz/")
+    echo "old name: "$f
+    echo "new name: "$newname
+    #mv $f $newname
+  done
+```
+
+Retrieve read 1 files with
+
+```{bash}
+find /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20-apex1-redo/good | grep -E "_R1_.fastq.gz" 
+```
+
+### Location of round 2 reads:
 
   /share/malooflab/Fastqs/Dimensions/hydrothermal_apex_2023-07-24/FASTQ_0292
   /share/malooflab/Fastqs/Dimensions/hydrothermal_apex_2023-07-24/FASTQ_0293
   
+These reads have file names like `72_JM72_9999RND_tm2-01-v1_RNAseq_0_77-C_S72_L001_R1_001.fastq.gz`
 
-  
-  
-  
-  
+Retrieve read 1 files with:
+
+```{bash}
+find   /share/malooflab/Fastqs/Dimensions/hydrothermal_apex_2023-07-24/ | grep -E "_[a-z]{2}[a-z0-9]-[0-9]{2}.*_R1_.*fastq\.gz$" 
+```
+
+## Create File List
+
+List of Read 1 files for mapping.
+```{bash}
+cd /share/malooflab/Julin/git/Strep-tort-vernalization/intermediate
+
+find /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20-apex1-redo/good | grep -E "_R1_.fastq.gz" > R1_fastqs.txt
+
+
+find /share/malooflab/Fastqs/Dimensions/hydrothermal_2022-09-20 | grep -E "Apex.*_R1_.*fastq\.gz$"  >> R1_fastqs.txt
+
+find /share/malooflab/Fastqs/Dimensions/hydrothermal_apex_2023-07-24/ | grep -E "_[a-z]{2}[a-z0-9]-[0-9]{2}.*_R1_.*fastq\.gz$" >> R1_fastqs.txt
+
+
+```
+
+
+
+See SLURM script
+
