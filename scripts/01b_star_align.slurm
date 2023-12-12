@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=poduction # partition to submit to
+#SBATCH --partition=production # partition to submit to
 #SBATCH --job-name="mapping_array" # Job name
 #SBATCH --array=1-2388
 #SBATCH --nodes=1 # single node, anything more than 1 will not run
