@@ -36,7 +36,7 @@ read2=`echo $read1 | sed s/_R1_/_R2_/`
 echo "read1 $read1"
 echo "read2 $read2"
 
-sample=$(basename $read1 | grep -o -E "[a-z]{2}[a-z0-9]-[0-9]{2}-[iv][0-9]")
+sample=$(basename $read1 | grep -o -E "[a-z]{2}[a-z0-9]-[0-9]{2}[-_][iv][0-9]")
 
 ## mapping
 
