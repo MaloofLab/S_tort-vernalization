@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --partition=production # partition to submit to
+#SBATCH --partition=dev # partition to submit to
 #SBATCH --job-name="mapping_array" # Job name
-#SBATCH --array=1-238
+#SBATCH --array=1-1
 #SBATCH --nodes=1 # single node, anything more than 1 will not run
 #SBATCH --ntasks=2 # equivalent to cpus, stick to around 20 max on gc64, or gc128 nodes
 #SBATCH --mem-per-cpu=4000 # in MB, memory pool all cores, default is 2GB per cpu
-#SBATCH --time=0-01:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
+#SBATCH --time=1-00:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
 #SBATCH --output=mapping_array_%A_%a.out # STDOUT
 #SBATCH --error=mapping_array_%A_%a.err # STDERR
 #SBATCH --mail-user=jnmaloof@ucdavis.edu # does not work yet
@@ -27,7 +27,7 @@ cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate/bams
 
 echo "My SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 
-read1=`sed "${SLURM_ARRAY_TASK_ID}q;d" ../R1_fastqs.txt`
+read1=`sed "${SLURM_ARRAY_TASK_ID}q;d" ../R1_fastqs_redo.txt`
 
 read2=`echo $read1 | sed s/_R1_/_R2_/`
 
