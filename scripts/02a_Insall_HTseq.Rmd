@@ -1,0 +1,21 @@
+---
+title: "02a_Install_HTseq"
+author: "Julin Maloof"
+date: "2024-02-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Install HTseq on LSSCO0 cluster (module is version 0.12)
+```{bash}
+module load anaconda3/23.1.0
+conda create -p /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
+conda init
+conda source .bashrc
+conda config --add channels bioconda
+conda install bioconda::htseq
+```
+
