@@ -92,6 +92,18 @@ find /share/malooflab/Fastqs/Dimensions/hydrothermal_apex_2023-07-24/ | grep -E 
 ```
 
 
+## List of failed:
+
+first get list of worked:
+
+```{bash}
+cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate/bams
+ls -1 *final* | sed s/_Log.final.out// > ../worked.txt
+cd ../
+grep -f worked.txt -v R1_fastqs.txt > R1_fastqs_redo.txt
+ 
+```
+
 
 See SLURM script
 
