@@ -107,3 +107,12 @@ grep -f worked.txt -v R1_fastqs.txt > R1_fastqs_redo.txt
 
 See SLURM script
 
+## List of files for htseq-count
+
+```{bash}
+cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate/bams
+ls -1 *Aligned.sortedByCoord.out.bam > ../bams_to_count.txt
+
+```
+
+
