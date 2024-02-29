@@ -39,7 +39,7 @@ conda activate
 
 ## get counts
 
-htseq-counts \
+htseq-count \
   --format=bam \
   --order=pos \
   --max-reads-in-buffer=10000000 \
