@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --partition=production # partition to submit to
 #SBATCH --job-name="mapping_array" # Job name
-#SBATCH --array=1-74
+#SBATCH --array=1-3
 #SBATCH --nodes=1 # single node, anything more than 1 will not run
-#SBATCH --ntasks=2 # equivalent to cpus, stick to around 20 max on gc64, or gc128 nodes
+#SBATCH --ntasks=4 # equivalent to cpus, stick to around 20 max on gc64, or gc128 nodes
 #SBATCH --mem-per-cpu=4000 # in MB, memory pool all cores, default is 2GB per cpu
-#SBATCH --time=0-08:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
+#SBATCH --time=2-00:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
 #SBATCH --output=mapping_array_%A_%a.out # STDOUT
 #SBATCH --error=mapping_array_%A_%a.err # STDERR
 #SBATCH --mail-user=jnmaloof@ucdavis.edu # does not work yet
@@ -41,7 +41,7 @@ echo "sample $sample"
 ## mapping
 
 STAR --runMode alignReads \
-  --runThreadN 2 \
+  --runThreadN 4 \
   --genomeDir /share/malooflab/ref_genomes/S_diversifolious/Sdiv.2023HiFiasm/STAR_index \
   --readFilesIn ${read1} ${read2}   --readFilesCommand gunzip -c \
   --outFileNamePrefix "${sample}_" --outSAMtype BAM SortedByCoordinate \
