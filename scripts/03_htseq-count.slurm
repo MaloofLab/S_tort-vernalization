@@ -33,7 +33,7 @@ conda activate /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
 cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate/bams
 
 source ~/.bashrc
-conda activate 
+conda activate /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
 
 # echo "My SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 
