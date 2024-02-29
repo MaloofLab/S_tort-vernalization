@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --partition=dev # partition to submit to
+#SBATCH --partition=production # partition to submit to
 #SBATCH --job-name="htseq" # Job name
-#SBATCH --array=1-2
+#SBATCH --array=1-350
 #SBATCH --nodes=1 # single node, anything more than 1 will not run
 #SBATCH --ntasks=2 # equivalent to cpus, stick to around 20 max on gc64, or gc128 nodes
 #SBATCH --mem-per-cpu=4000 # in MB, memory pool all cores, default is 2GB per cpu
-#SBATCH --time=0-03:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
+#SBATCH --time=0-08:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
 #SBATCH --output=htseq_%A_%a.out # STDOUT
 #SBATCH --error=htseq_%A_%a.err # STDERR
 #SBATCH --mail-user=jnmaloof@ucdavis.edu # does not work yet
