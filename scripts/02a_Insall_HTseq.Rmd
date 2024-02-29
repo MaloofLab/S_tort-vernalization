@@ -14,8 +14,15 @@ Install HTseq on LSSCO0 cluster (module is version 0.12)
 module load anaconda3/23.1.0
 conda create -p /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
 conda init
-conda source .bashrc
+source ~/.bashrc
 conda config --add channels bioconda
 conda install bioconda::htseq
+```
+
+To use it:
+```{bash}
+module load anaconda3/23.1.0
+source ~/.bashrc
+conda activate 
 ```
 
