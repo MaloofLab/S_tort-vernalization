@@ -16,10 +16,6 @@
 
 start=`date +%s`
 
-## modules
-
-module load anaconda3/23.1.0
-
 
 ## Conda set up
 
@@ -37,6 +33,10 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+## modules
+
+module load anaconda3/23.1.0
 
 conda activate /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
 
