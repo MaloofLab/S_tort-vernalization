@@ -5,7 +5,7 @@
 #SBATCH --nodes=1 # single node, anything more than 1 will not run
 #SBATCH --ntasks=1 # equivalent to cpus, stick to around 20 max on gc64, or gc128 nodes
 #SBATCH --mem-per-cpu=4000 # in MB, memory pool all cores, default is 2GB per cpu
-#SBATCH --time=0-08:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
+#SBATCH --time=0-04:00:00  # expected time of completion in hours, minutes, seconds, default 1-day
 #SBATCH --output=htseq_%A_%a.out # STDOUT
 #SBATCH --error=htseq_%A_%a.err # STDERR
 #SBATCH --mail-user=jnmaloof@ucdavis.edu # does not work yet
@@ -32,9 +32,6 @@ conda activate /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
 
 cd /share/malooflab/Julin/git/S_tort-vernalization/intermediate/bams
 
-source ~/.bashrc
-conda activate /share/malooflab/Packages/Conda_Envs/HTseq2.0.5
-
 echo "My SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 
 bamfile=`sed "${SLURM_ARRAY_TASK_ID}q;d" ../bams_to_count.txt`
@@ -54,7 +51,7 @@ htseq-count \
   --max-reads-in-buffer=10000000 \
   --idattr=Parent \
   $bamfile \
-  /share/malooflab/ref_genomes/S_diversifolious/Sdiv.2023HiFiasm/HiFiasm_S.div.small.gff3 > ../counts/$sample_counts.tsv
+  /share/malooflab/ref_genomes/S_diversifolious/Sdiv.2023HiFiasm/HiFiasm_S.div.small.gff3 > ../counts/${sample}_counts.tsv
 
 
 
