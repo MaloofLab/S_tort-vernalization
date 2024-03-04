@@ -1,0 +1,69 @@
+---
+title: "03b_Consolidate_Counts"
+author: "Julin Maloof"
+date: "2024-03-03"
+output: html_document
+---
+
+Script to pull the individual counts into a single data frame and sum counts from multiple lanes
+
+```{r}
+library(tidyverse)
+```
+read it in
+
+```{r}
+data <- tibble(file=dir("../intermediate/counts", full.names = TRUE)) %>%
+   mutate(sample=basename(file) %>% str_remove("_counts\\.tsv\\.gz"),
+          counts = map(file, read_tsv, col_names=c("geneID", "counts"), show_col_types = FALSE)) %>%
+  select(-file) %>%
+  unnest(counts)
+data %>% head(100)
+```
+
+sum counts for multiple lanes of same sample
+there is a slight variation in the name...first make the names the same.
+```{r}
+data$sample %>% unique() 
+
+data <- data %>%
+  mutate(sample2 = str_replace(sample, "-([iv])", "_\\1"))
+
+data$sample2 %>% unique() 
+
+```
+
+```{r}
+data2 <- data %>%
+  group_by(sample2, geneID) %>%
+  summarize(counts=sum(counts)) %>%
+  ungroup()
+
+data2
+```
+did it work?
+
+```{r}
+data %>% filter(sample2=="bhr-02_i1") %>%
+  pivot_wider(id_cols = geneID, names_from=sample, values_from = counts) %>%
+    slice_head(n=10) %>%
+  mutate(total=`bhr-02_i1` + `bhr-02-i1`)
+```
+
+```{r}
+data2 %>% filter(sample2=="bhr-02_i1") %>% slice_head(n=10) 
+```
+
+pivot it wide:
+
+```{r}
+data2_wide <- data2 %>% 
+  pivot_wider(id_cols = geneID, names_from = sample2, values_from = counts)
+
+data2_wide
+```
+
+```{r}
+write_csv(data2_wide, "../output/raw_counts.csv.gz")
+```
+
