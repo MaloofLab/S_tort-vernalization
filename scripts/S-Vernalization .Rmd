@@ -115,7 +115,7 @@ design
 dge.data_Normalization_dispersions <- estimateGLMCommonDisp(dge.data_Normalization,design,verbose = TRUE)
 dge.data_Normalization_dispersions <- estimateGLMTrendedDisp(dge.data_Normalization_dispersions,design)
 dge.data_Normalization_dispersions <-estimateGLMTagwiseDisp(dge.data_Normalization_dispersions,design)
-plotBCV(dge.data_Normalization_dispersions)
+plotBCV(dge.data_Normalization_dispersions) 
 ```
 
 ```{r}
