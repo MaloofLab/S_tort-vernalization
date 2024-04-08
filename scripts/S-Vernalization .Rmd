@@ -9,7 +9,7 @@ output: html_document
 
 Exercise 1. Loading the dataset (raw_data)
 ```{r}
-raw_data<-read.csv("~/Desktop/raw_counts.csv.gz")
+raw_data<-read.csv("~/Desktop/Maloof R/raw_counts.csv.gz")
 ```
 
 
@@ -105,28 +105,24 @@ plotMDS(dge.data_Normalization, method = "bcv")
 Exercise 8
 ```{r}
 data_Normalization<-cpm(dge.data_Normalization)
-data_Normalization_log <- log2(data_Normalization[,-1] + 1)
+data_Normalization_log <- log2(data_Normalization[,-1]+1)
 
 design <- model.matrix(~Pop+Vern,data = sample.description_data)
-rownames(design) <- sample.description_data$samples
+rownames(design) <- sample.description_data$sample
 design
 
 
-ncol(dge.data_Normalization)  # Number of samples in count data
-nrow(design)  # Number of samples in design matrix
-
-
-#Problem here
 dge.data_Normalization_dispersions <- estimateGLMCommonDisp(dge.data_Normalization,design,verbose = TRUE)
-
+dge.data_Normalization_dispersions <- estimateGLMTrendedDisp(dge.data_Normalization_dispersions,design)
+dge.data_Normalization_dispersions <-estimateGLMTagwiseDisp(dge.data_Normalization_dispersions,design)
+plotBCV(dge.data_Normalization_dispersions)
 ```
 
 ```{r}
-dim(design)
-dim(dge.data_Normalization)
-head(design)
-dge.data_Normalization
-colnames(dge.data_Normalization)
+fit <- glmFit (dge.data_Normalization_dispersions,design)
+gt.lrt <- glmLRT(fit,coef="Vernv1")
+topTags(gt.lrt)
+summary(decideTestsDGE(gt.lrt,p.value=0.01))
+#Question: sicne logFC is the log2 fold-change in expression what does the vernv0 comparing to based on the logFC? v0?
+
 ```
-
-
