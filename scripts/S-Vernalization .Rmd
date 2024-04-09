@@ -102,6 +102,18 @@ dge.data_Normalization$sample # look at the normalization factors
 plotMDS(dge.data_Normalization, method = "bcv") 
 ```
 
+```{r}
+## make sure sample order is the same in the dge object and in the sample sheet
+all(sample.description_data$sample==rownames(dge.data_Normalization$samples) )
+```
+
+subset bhr
+```{r}
+dge.data_Normalization.bhr <- dge.data_Normalization[,sample.description_data$Pop=="bhr"]
+dge.data_Normalization.bhr$samples
+```
+
+
 Exercise 8
 ```{r}
 data_Normalization<-cpm(dge.data_Normalization)
