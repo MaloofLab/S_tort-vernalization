@@ -7596,11 +7596,606 @@ print(result_v0v1.yo)</code></pre>
 ## Down      270
 ## NotSig  29373
 ## Up        340</code></pre>
-<pre class="r"><code>library(gapminder)
-by_Pop &lt;- sample.description_data %&gt;% group_by(sample,Pop,Vern) %&gt;% nest()
+<p>Loop for each population (vo vs v1)</p>
+<table>
+<thead>
+<tr class="header">
+<th>Population</th>
+<th>Down</th>
+<th>NotSig</th>
+<th>Up</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bhr</td>
+<td>298</td>
+<td>29088</td>
+<td>597</td>
+</tr>
+<tr class="even">
+<td>ihl</td>
+<td>203</td>
+<td>28977</td>
+<td>803</td>
+</tr>
+<tr class="odd">
+<td>kc</td>
+<td>282</td>
+<td>28978</td>
+<td>723</td>
+</tr>
+<tr class="even">
+<td>lv</td>
+<td>203</td>
+<td>28458</td>
+<td>1322</td>
+</tr>
+<tr class="odd">
+<td>sq</td>
+<td>637</td>
+<td>29302</td>
+<td>44</td>
+</tr>
+<tr class="even">
+<td>tm</td>
+<td>1521</td>
+<td>27924</td>
+<td>538</td>
+</tr>
+<tr class="odd">
+<td>wl</td>
+<td>112</td>
+<td>29533</td>
+<td>338</td>
+</tr>
+<tr class="even">
+<td>yo</td>
+<td>270</td>
+<td>29373</td>
+<td>340</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>pop_groups &lt;- unique(sample.description_data$Pop)
+results_list &lt;- list()
 
-by_Pop &lt;- by_Pop %&gt;% mutate(Pop=factor(Pop), 
-         Vern=factor(Vern,levels = c(&quot;v0&quot;,&quot;v1&quot;, &quot;v2&quot;,&quot;i0&quot;,&quot;i1&quot;,&quot;i2&quot;))) # setting the levels in this way makes &quot;v0&quot; the reference  </code></pre>
+for (pop in pop_groups) {
+
+  #Extract the Normalization data for each population
+  dge.data_Normalization_pop &lt;- dge.data_Normalization[, sample.description_data$Pop == pop]
+  #Extract sample description data for each population
+  sample.description_data_pop &lt;- sample.description_data %&gt;% filter(Pop == pop)
+  #redesign the matrix with correct # column for each population
+  design_pop &lt;- model.matrix(~Vern, data = sample.description_data_pop)
+  rownames(design_pop) &lt;- sample.description_data_pop$samples
+  #using matrix to find out the Normalization dispersions for each population
+  dge.data_Normalization_dispersions_pop &lt;- estimateGLMCommonDisp(dge.data_Normalization_pop, design_pop, verbose = TRUE)
+  
+  #Fit the model for each population dispersion data
+  fit_pop &lt;- glmFit(dge.data_Normalization_dispersions_pop, design_pop)
+  # Conduct likelihood ratio test for each population
+  gt.lrt_pop &lt;- glmLRT(fit_pop, coef = &quot;Vernv1&quot;)
+  
+  # Summarize the results for each population (up / down regulation)
+  result_v0v1_pop &lt;- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  description &lt;- &quot;v0v1 comparison for population: &quot; 
+  results_list[[pop]] &lt;- list(
+  Description = paste(description, pop, sep=&quot;&quot;),
+  Results = result_v0v1_pop)
+  }</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.29412 , BCV = 0.5423</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.15282 , BCV = 0.3909</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.41909 , BCV = 0.6474</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.78411 , BCV = 0.8855</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.80391 , BCV = 1.3431</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.24866 , BCV = 1.1174</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.04389 , BCV = 1.0217</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.2375 , BCV = 1.1124</code></pre>
+<pre class="r"><code># Print or return results
+print(results_list)</code></pre>
+<pre><code>## $bhr
+## $bhr$Description
+## [1] &quot;v0v1 comparison for population: bhr&quot;
+## 
+## $bhr$Results
+##        Vernv1
+## Down      298
+## NotSig  29088
+## Up        597
+## 
+## 
+## $ihl
+## $ihl$Description
+## [1] &quot;v0v1 comparison for population: ihl&quot;
+## 
+## $ihl$Results
+##        Vernv1
+## Down      203
+## NotSig  28977
+## Up        803
+## 
+## 
+## $kc
+## $kc$Description
+## [1] &quot;v0v1 comparison for population: kc&quot;
+## 
+## $kc$Results
+##        Vernv1
+## Down      282
+## NotSig  28978
+## Up        723
+## 
+## 
+## $lv
+## $lv$Description
+## [1] &quot;v0v1 comparison for population: lv&quot;
+## 
+## $lv$Results
+##        Vernv1
+## Down      203
+## NotSig  28458
+## Up       1322
+## 
+## 
+## $sq
+## $sq$Description
+## [1] &quot;v0v1 comparison for population: sq&quot;
+## 
+## $sq$Results
+##        Vernv1
+## Down      637
+## NotSig  29302
+## Up         44
+## 
+## 
+## $tm
+## $tm$Description
+## [1] &quot;v0v1 comparison for population: tm&quot;
+## 
+## $tm$Results
+##        Vernv1
+## Down     1521
+## NotSig  27924
+## Up        538
+## 
+## 
+## $wl
+## $wl$Description
+## [1] &quot;v0v1 comparison for population: wl&quot;
+## 
+## $wl$Results
+##        Vernv1
+## Down      112
+## NotSig  29533
+## Up        338
+## 
+## 
+## $yo
+## $yo$Description
+## [1] &quot;v0v1 comparison for population: yo&quot;
+## 
+## $yo$Results
+##        Vernv1
+## Down      270
+## NotSig  29373
+## Up        340</code></pre>
+<p>Loop for each population (vo vs v2)</p>
+<table>
+<thead>
+<tr class="header">
+<th>Population</th>
+<th>Down</th>
+<th>NotSig</th>
+<th>Up</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bhr</td>
+<td>530</td>
+<td>28489</td>
+<td>964</td>
+</tr>
+<tr class="even">
+<td>ihl</td>
+<td>368</td>
+<td>28630</td>
+<td>985</td>
+</tr>
+<tr class="odd">
+<td>kc</td>
+<td>105</td>
+<td>29197</td>
+<td>681</td>
+</tr>
+<tr class="even">
+<td>lv</td>
+<td>1081</td>
+<td>27785</td>
+<td>1117</td>
+</tr>
+<tr class="odd">
+<td>sq</td>
+<td>707</td>
+<td>29161</td>
+<td>115</td>
+</tr>
+<tr class="even">
+<td>tm</td>
+<td>35</td>
+<td>29708</td>
+<td>240</td>
+</tr>
+<tr class="odd">
+<td>wl</td>
+<td>223</td>
+<td>29277</td>
+<td>483</td>
+</tr>
+<tr class="even">
+<td>yo</td>
+<td>126</td>
+<td>29297</td>
+<td>560</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>pop_groups &lt;- unique(sample.description_data$Pop)
+results_list &lt;- list()
+
+for (pop in pop_groups) {
+
+  #Extract the Normalization data for each population
+  dge.data_Normalization_pop &lt;- dge.data_Normalization[, sample.description_data$Pop == pop]
+  #Extract sample description data for each population
+  sample.description_data_pop &lt;- sample.description_data %&gt;% filter(Pop == pop)
+  #redesign the matrix with correct # column for each population
+  design_pop &lt;- model.matrix(~Vern, data = sample.description_data_pop)
+  rownames(design_pop) &lt;- sample.description_data_pop$samples
+  #using matrix to find out the Normalization dispersions for each population
+  dge.data_Normalization_dispersions_pop &lt;- estimateGLMCommonDisp(dge.data_Normalization_pop, design_pop, verbose = TRUE)
+  
+  #Fit the model for each population dispersion data
+  fit_pop &lt;- glmFit(dge.data_Normalization_dispersions_pop, design_pop)
+  # Conduct likelihood ratio test for each population
+  gt.lrt_pop &lt;- glmLRT(fit_pop, coef = &quot;Vernv2&quot;)
+  
+  # Summarize the results for each population (up / down regulation)
+  result_v0v2_pop &lt;- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  description &lt;- &quot;v0v2 comparison for population: &quot; 
+  results_list[[pop]] &lt;- list(
+  Description = paste(description, pop, sep=&quot;&quot;),
+  Results = result_v0v2_pop)
+  }</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.29412 , BCV = 0.5423</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.15282 , BCV = 0.3909</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.41909 , BCV = 0.6474</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.78411 , BCV = 0.8855</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.80391 , BCV = 1.3431</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.24866 , BCV = 1.1174</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.04389 , BCV = 1.0217</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.2375 , BCV = 1.1124</code></pre>
+<pre class="r"><code># Print or return results
+print(results_list)</code></pre>
+<pre><code>## $bhr
+## $bhr$Description
+## [1] &quot;v0v2 comparison for population: bhr&quot;
+## 
+## $bhr$Results
+##        Vernv2
+## Down      530
+## NotSig  28489
+## Up        964
+## 
+## 
+## $ihl
+## $ihl$Description
+## [1] &quot;v0v2 comparison for population: ihl&quot;
+## 
+## $ihl$Results
+##        Vernv2
+## Down      368
+## NotSig  28630
+## Up        985
+## 
+## 
+## $kc
+## $kc$Description
+## [1] &quot;v0v2 comparison for population: kc&quot;
+## 
+## $kc$Results
+##        Vernv2
+## Down      105
+## NotSig  29197
+## Up        681
+## 
+## 
+## $lv
+## $lv$Description
+## [1] &quot;v0v2 comparison for population: lv&quot;
+## 
+## $lv$Results
+##        Vernv2
+## Down     1081
+## NotSig  27785
+## Up       1117
+## 
+## 
+## $sq
+## $sq$Description
+## [1] &quot;v0v2 comparison for population: sq&quot;
+## 
+## $sq$Results
+##        Vernv2
+## Down      707
+## NotSig  29161
+## Up        115
+## 
+## 
+## $tm
+## $tm$Description
+## [1] &quot;v0v2 comparison for population: tm&quot;
+## 
+## $tm$Results
+##        Vernv2
+## Down       35
+## NotSig  29708
+## Up        240
+## 
+## 
+## $wl
+## $wl$Description
+## [1] &quot;v0v2 comparison for population: wl&quot;
+## 
+## $wl$Results
+##        Vernv2
+## Down      223
+## NotSig  29277
+## Up        483
+## 
+## 
+## $yo
+## $yo$Description
+## [1] &quot;v0v2 comparison for population: yo&quot;
+## 
+## $yo$Results
+##        Vernv2
+## Down      126
+## NotSig  29297
+## Up        560</code></pre>
+<p>Loop for each population (v1 vs v2)</p>
+<table>
+<thead>
+<tr class="header">
+<th>Population</th>
+<th>Down</th>
+<th>NotSig</th>
+<th>Up</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bhr</td>
+<td>468</td>
+<td>29029</td>
+<td>486</td>
+</tr>
+<tr class="even">
+<td>ihl</td>
+<td>374</td>
+<td>29304</td>
+<td>305</td>
+</tr>
+<tr class="odd">
+<td>kc</td>
+<td>19</td>
+<td>29778</td>
+<td>186</td>
+</tr>
+<tr class="even">
+<td>lv</td>
+<td>1220</td>
+<td>28555</td>
+<td>208</td>
+</tr>
+<tr class="odd">
+<td>sq</td>
+<td>195</td>
+<td>29605</td>
+<td>183</td>
+</tr>
+<tr class="even">
+<td>tm</td>
+<td>0</td>
+<td>29940</td>
+<td>43</td>
+</tr>
+<tr class="odd">
+<td>wl</td>
+<td>108</td>
+<td>29689</td>
+<td>186</td>
+</tr>
+<tr class="even">
+<td>yo</td>
+<td>87</td>
+<td>29465</td>
+<td>431</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li>create a new reference for v1</li>
+</ol>
+<pre class="r"><code>sample.description_data_v1_reference &lt;- data%&gt;%
+  mutate(Pop=factor(Pop), 
+         Vern=factor(Vern,levels = c(&quot;v1&quot;,&quot;v0&quot;, &quot;v2&quot;,&quot;i0&quot;,&quot;i1&quot;,&quot;i2&quot;))) # setting the levels in this way makes &quot;v1&quot; the reference  
+
+sample.description_data_v1_reference</code></pre>
+<pre><code>## # A tibble: 206 × 4
+##    sample   Pop   Vern  group 
+##    &lt;chr&gt;    &lt;fct&gt; &lt;fct&gt; &lt;chr&gt; 
+##  1 bhr02_i0 bhr   i0    i0_bhr
+##  2 bhr02_i1 bhr   i1    i1_bhr
+##  3 bhr02_i2 bhr   i2    i2_bhr
+##  4 bhr02_v0 bhr   v0    v0_bhr
+##  5 bhr02_v1 bhr   v1    v1_bhr
+##  6 bhr02_v2 bhr   v2    v2_bhr
+##  7 bhr06_i0 bhr   i0    i0_bhr
+##  8 bhr06_i1 bhr   i1    i1_bhr
+##  9 bhr06_i2 bhr   i2    i2_bhr
+## 10 bhr06_v0 bhr   v0    v0_bhr
+## # ℹ 196 more rows</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>loop for comparison</li>
+</ol>
+<pre class="r"><code>pop_groups &lt;- unique(sample.description_data_v1_reference$Pop)
+results_list &lt;- list()
+
+for (pop in pop_groups) {
+
+  #Extract the Normalization data for each population
+  dge.data_Normalization_pop &lt;- dge.data_Normalization[, sample.description_data_v1_reference$Pop == pop]
+  #Extract sample description data for each population
+  sample.description_data_pop &lt;- sample.description_data_v1_reference %&gt;% filter(Pop == pop)
+  #redesign the matrix with correct # column for each population
+  design_pop &lt;- model.matrix(~Vern, data = sample.description_data_pop)
+  rownames(design_pop) &lt;- sample.description_data_pop$samples
+  #using matrix to find out the Normalization dispersions for each population
+  dge.data_Normalization_dispersions_pop &lt;- estimateGLMCommonDisp(dge.data_Normalization_pop, design_pop, verbose = TRUE)
+  
+  #Fit the model for each population dispersion data
+  fit_pop &lt;- glmFit(dge.data_Normalization_dispersions_pop, design_pop)
+  # Conduct likelihood ratio test for each population
+  gt.lrt_pop &lt;- glmLRT(fit_pop, coef = &quot;Vernv2&quot;)
+  # Summarize the results for each population (up / down regulation)
+  result_v1v2_pop &lt;- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  description &lt;- &quot;v1v2 comparison for population: &quot; 
+  results_list[[pop]] &lt;- list(
+    Description = paste(description, pop, sep=&quot;&quot;),
+    Results = result_v1v2_pop)
+   }</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.29412 , BCV = 0.5423</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.15282 , BCV = 0.3909</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.41909 , BCV = 0.6474</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 0.78411 , BCV = 0.8855</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.80391 , BCV = 1.3431</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.24866 , BCV = 1.1174</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.04389 , BCV = 1.0217</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `samples`.</code></pre>
+<pre><code>## Disp = 1.2375 , BCV = 1.1124</code></pre>
+<pre class="r"><code># Print or return results
+print(results_list)</code></pre>
+<pre><code>## $bhr
+## $bhr$Description
+## [1] &quot;v1v2 comparison for population: bhr&quot;
+## 
+## $bhr$Results
+##        Vernv2
+## Down      468
+## NotSig  29029
+## Up        486
+## 
+## 
+## $ihl
+## $ihl$Description
+## [1] &quot;v1v2 comparison for population: ihl&quot;
+## 
+## $ihl$Results
+##        Vernv2
+## Down      374
+## NotSig  29304
+## Up        305
+## 
+## 
+## $kc
+## $kc$Description
+## [1] &quot;v1v2 comparison for population: kc&quot;
+## 
+## $kc$Results
+##        Vernv2
+## Down       19
+## NotSig  29778
+## Up        186
+## 
+## 
+## $lv
+## $lv$Description
+## [1] &quot;v1v2 comparison for population: lv&quot;
+## 
+## $lv$Results
+##        Vernv2
+## Down     1220
+## NotSig  28555
+## Up        208
+## 
+## 
+## $sq
+## $sq$Description
+## [1] &quot;v1v2 comparison for population: sq&quot;
+## 
+## $sq$Results
+##        Vernv2
+## Down      195
+## NotSig  29605
+## Up        183
+## 
+## 
+## $tm
+## $tm$Description
+## [1] &quot;v1v2 comparison for population: tm&quot;
+## 
+## $tm$Results
+##        Vernv2
+## Down        0
+## NotSig  29940
+## Up         43
+## 
+## 
+## $wl
+## $wl$Description
+## [1] &quot;v1v2 comparison for population: wl&quot;
+## 
+## $wl$Results
+##        Vernv2
+## Down      108
+## NotSig  29689
+## Up        186
+## 
+## 
+## $yo
+## $yo$Description
+## [1] &quot;v1v2 comparison for population: yo&quot;
+## 
+## $yo$Results
+##        Vernv2
+## Down       87
+## NotSig  29465
+## Up        431</code></pre>
 
 
 

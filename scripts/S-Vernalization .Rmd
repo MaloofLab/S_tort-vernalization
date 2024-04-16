@@ -186,24 +186,157 @@ result_v0v1.yo<-summary(decideTestsDGE(gt.lrt.yo,p=0.01))
 print(result_v0v1.yo)
 ```
 
+Loop for each population (vo vs v1)
 
 
-
-
-
-
-
-
-
+| Population | Down | NotSig | Up   |
+|------------|------|--------|------|
+| bhr        | 298  | 29088  | 597  |
+| ihl        | 203  | 28977  | 803  |
+| kc         | 282  | 28978  | 723  |
+| lv         | 203  | 28458  | 1322 |
+| sq         | 637  | 29302  | 44   |
+| tm         | 1521 | 27924  | 538  |
+| wl         | 112  | 29533  | 338  |
+| yo         | 270  | 29373  | 340  |
 
 
 ```{r}
-library(gapminder)
-by_Pop <- sample.description_data %>% group_by(sample,Pop,Vern) %>% nest()
+pop_groups <- unique(sample.description_data$Pop)
+results_list <- list()
 
-by_Pop <- by_Pop %>% mutate(Pop=factor(Pop), 
-         Vern=factor(Vern,levels = c("v0","v1", "v2","i0","i1","i2"))) # setting the levels in this way makes "v0" the reference  
+for (pop in pop_groups) {
+
+  #Extract the Normalization data for each population
+  dge.data_Normalization_pop <- dge.data_Normalization[, sample.description_data$Pop == pop]
+  #Extract sample description data for each population
+  sample.description_data_pop <- sample.description_data %>% filter(Pop == pop)
+  #redesign the matrix with correct # column for each population
+  design_pop <- model.matrix(~Vern, data = sample.description_data_pop)
+  rownames(design_pop) <- sample.description_data_pop$samples
+  #using matrix to find out the Normalization dispersions for each population
+  dge.data_Normalization_dispersions_pop <- estimateGLMCommonDisp(dge.data_Normalization_pop, design_pop, verbose = TRUE)
+  
+  #Fit the model for each population dispersion data
+  fit_pop <- glmFit(dge.data_Normalization_dispersions_pop, design_pop)
+  # Conduct likelihood ratio test for each population
+  gt.lrt_pop <- glmLRT(fit_pop, coef = "Vernv1")
+  
+  # Summarize the results for each population (up / down regulation)
+  result_v0v1_pop <- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  description <- "v0v1 comparison for population: " 
+  results_list[[pop]] <- list(
+  Description = paste(description, pop, sep=""),
+  Results = result_v0v1_pop)
+  }
+
+# Print or return results
+print(results_list)
+```
 
 
+
+
+Loop for each population (vo vs v2)
+
+
+| Population | Down | NotSig | Up   |
+|------------|------|--------|------|
+| bhr        | 530  | 28489  | 964  |
+| ihl        | 368  | 28630  | 985  |
+| kc         | 105  | 29197  | 681  |
+| lv         | 1081 | 27785  | 1117 |
+| sq         | 707  | 29161  | 115  |
+| tm         | 35   | 29708  | 240  |
+| wl         | 223  | 29277  | 483  |
+| yo         | 126  | 29297  | 560  |
+
+```{r}
+pop_groups <- unique(sample.description_data$Pop)
+results_list <- list()
+
+for (pop in pop_groups) {
+
+  #Extract the Normalization data for each population
+  dge.data_Normalization_pop <- dge.data_Normalization[, sample.description_data$Pop == pop]
+  #Extract sample description data for each population
+  sample.description_data_pop <- sample.description_data %>% filter(Pop == pop)
+  #redesign the matrix with correct # column for each population
+  design_pop <- model.matrix(~Vern, data = sample.description_data_pop)
+  rownames(design_pop) <- sample.description_data_pop$samples
+  #using matrix to find out the Normalization dispersions for each population
+  dge.data_Normalization_dispersions_pop <- estimateGLMCommonDisp(dge.data_Normalization_pop, design_pop, verbose = TRUE)
+  
+  #Fit the model for each population dispersion data
+  fit_pop <- glmFit(dge.data_Normalization_dispersions_pop, design_pop)
+  # Conduct likelihood ratio test for each population
+  gt.lrt_pop <- glmLRT(fit_pop, coef = "Vernv2")
+  
+  # Summarize the results for each population (up / down regulation)
+  result_v0v2_pop <- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  description <- "v0v2 comparison for population: " 
+  results_list[[pop]] <- list(
+  Description = paste(description, pop, sep=""),
+  Results = result_v0v2_pop)
+  }
+
+# Print or return results
+print(results_list)
+
+```
+Loop for each population (v1 vs v2)
+
+| Population | Down | NotSig | Up   |
+|------------|------|--------|------|
+| bhr        | 468  | 29029  | 486  |
+| ihl        | 374  | 29304  | 305  |
+| kc         | 19   | 29778  | 186  |
+| lv         | 1220 | 28555  | 208  |
+| sq         | 195  | 29605  | 183  |
+| tm         | 0    | 29940  | 43   |
+| wl         | 108  | 29689  | 186  |
+| yo         | 87   | 29465  | 431  |
+
+
+1. create a new reference for v1
+```{r}
+sample.description_data_v1_reference <- data%>%
+  mutate(Pop=factor(Pop), 
+         Vern=factor(Vern,levels = c("v1","v0", "v2","i0","i1","i2"))) # setting the levels in this way makes "v1" the reference  
+
+sample.description_data_v1_reference
+```
+
+2. loop for comparison
+```{r}
+pop_groups <- unique(sample.description_data_v1_reference$Pop)
+results_list <- list()
+
+for (pop in pop_groups) {
+
+  #Extract the Normalization data for each population
+  dge.data_Normalization_pop <- dge.data_Normalization[, sample.description_data_v1_reference$Pop == pop]
+  #Extract sample description data for each population
+  sample.description_data_pop <- sample.description_data_v1_reference %>% filter(Pop == pop)
+  #redesign the matrix with correct # column for each population
+  design_pop <- model.matrix(~Vern, data = sample.description_data_pop)
+  rownames(design_pop) <- sample.description_data_pop$samples
+  #using matrix to find out the Normalization dispersions for each population
+  dge.data_Normalization_dispersions_pop <- estimateGLMCommonDisp(dge.data_Normalization_pop, design_pop, verbose = TRUE)
+  
+  #Fit the model for each population dispersion data
+  fit_pop <- glmFit(dge.data_Normalization_dispersions_pop, design_pop)
+  # Conduct likelihood ratio test for each population
+  gt.lrt_pop <- glmLRT(fit_pop, coef = "Vernv2")
+  # Summarize the results for each population (up / down regulation)
+  result_v1v2_pop <- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  description <- "v1v2 comparison for population: " 
+  results_list[[pop]] <- list(
+    Description = paste(description, pop, sep=""),
+    Results = result_v1v2_pop)
+   }
+
+# Print or return results
+print(results_list)
 ```
 
