@@ -284,6 +284,7 @@ for (pop in pop_groups) {
 print(results_list)
 
 ```
+
 Loop for each population (v1 vs v2)
 
 | Population | Down | NotSig | Up   |
@@ -339,4 +340,46 @@ for (pop in pop_groups) {
 # Print or return results
 print(results_list)
 ```
+
+
+Full Table
+
+```{r}
+# Load the necessary library
+library(dplyr)
+
+# Define the data frames for each comparison
+vo_vs_v1_table <- data.frame(
+  Population = c("bhr", "ihl", "kc", "lv", "sq", "tm", "wl", "yo"),
+  Down = c(298, 203, 282, 203, 637, 1521, 112, 270),
+  NotSig = c(29088, 28977, 28978, 28458, 29302, 27924, 29533, 29373),
+  Up = c(597, 803, 723, 1322, 44, 538, 338, 340),
+  Comparison = 'vo_vs_v1'
+)
+
+vo_vs_v2_table<- data.frame(
+  Population = c("bhr", "ihl", "kc", "lv", "sq", "tm", "wl", "yo"),
+  Down = c(530, 368, 105, 1081, 707, 35, 223, 126),
+  NotSig = c(28489, 28630, 29197, 27785, 29161, 29708, 29277, 29297),
+  Up = c(964, 985, 681, 1117, 115, 240, 483, 560),
+  Comparison = 'vo_vs_v2'
+)
+
+v1_vs_v2_table <- data.frame(
+  Population = c("bhr", "ihl", "kc", "lv", "sq", "tm", "wl", "yo"),
+  Down = c(468, 374, 19, 1220, 195, 0, 108, 87),
+  NotSig = c(29029, 29304, 29778, 28555, 29605, 29940, 29689, 29465),
+  Up = c(486, 305, 186, 208, 183, 43, 186, 431),
+  Comparison = 'v1_vs_v2'
+)
+
+
+combined_full_data_table <- bind_rows(vo_vs_v1_table, vo_vs_v2_table, v1_vs_v2_table)
+
+write.csv(combined_full_data_table, "combined_full_data_table_v0v1v2", row.names = FALSE)
+
+print(combined_full_data_table)
+
+```
+
 
