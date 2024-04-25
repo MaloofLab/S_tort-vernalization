@@ -8230,7 +8230,8 @@ v1_vs_v2_table &lt;- data.frame(
 
 combined_full_data_table &lt;- bind_rows(vo_vs_v1_table, vo_vs_v2_table, v1_vs_v2_table)
 
-write.csv(combined_full_data_table, &quot;combined_full_data_table_v0v1v2&quot;, row.names = FALSE)
+write.csv(combined_full_data_table, &quot;combined_full_data_table_v0v1v2.csv&quot;, row.names = FALSE)
+
 
 print(combined_full_data_table)</code></pre>
 <pre><code>##    Population Down NotSig   Up Comparison

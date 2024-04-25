@@ -376,7 +376,8 @@ v1_vs_v2_table <- data.frame(
 
 combined_full_data_table <- bind_rows(vo_vs_v1_table, vo_vs_v2_table, v1_vs_v2_table)
 
-write.csv(combined_full_data_table, "combined_full_data_table_v0v1v2", row.names = FALSE)
+write.csv(combined_full_data_table, "combined_full_data_table_v0v1v2.csv", row.names = FALSE)
+
 
 print(combined_full_data_table)
 
