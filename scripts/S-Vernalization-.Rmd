@@ -135,9 +135,38 @@ fit <- glmFit (dge.data_Normalization_dispersions,design)
 gt.lrt <- glmLRT(fit,coef="Vernv1")
 topTags(gt.lrt)
 summary(decideTestsDGE(gt.lrt,p.value=0.01))
-#Question: sicne logFC is the log2 fold-change in expression what does the vernv0 comparing to based on the logFC? v0?
+
+Pop_Vern_gene <- topTags(gt.lrt,n = Inf,p.value = 0.01)$table
+Pop_Vern_gene
 
 ```
+
+
+Transcriptional
+```{r}
+library(tibble)
+plotDE <- function(genes, dge.data_Normalization_dispersions, sample.description_raw_data) {
+  require(ggplot2)
+  tmp.data <- t(log2(cpm(dge.data_Normalization_dispersions[genes,])+1))
+  tmp.data <- tmp.data %>%
+    as.data.frame() %>%
+    rownames_to_column("sample") %>%
+    left_join(sample.description_raw_data,by="sample")
+  tmp.data <- tmp.data %>%
+    pivot_longer(cols=starts_with("Sdiv"), values_to = "log2_cpm", names_to = "gene")
+  pl <- ggplot(tmp.data,aes(x=Vern,y=log2_cpm, fill=Pop))
+  pl <- pl + facet_wrap( ~ gene)
+  pl <- pl + ylab("log2(cpm)") + xlab("genotype")
+  pl <- pl + geom_boxplot()
+  pl + theme(axis.text.x  = element_text(angle=45, vjust=1,hjust=1))
+}
+
+plotDE("Sdiv_ptg000001l_0001-R",dge.data_Normalization_dispersions,sample.description_data)
+plotDE(rownames(Pop_Vern_gene)[1:3],dge.data_Normalization_dispersions,sample.description_data)
+
+
+```
+
 
 
 subset bhr single comparsion v0 vs v1
