@@ -167,6 +167,48 @@ plotDE(rownames(Pop_Vern_gene)[1:3],dge.data_Normalization_dispersions,sample.de
 
 ```
 
+```{r}
+
+```{r}
+library(tibble)
+library(ggplot2)
+library(dplyr)
+
+plotDE_line <- function(genes, dge.data_Normalization_dispersions, sample.description_raw_data) {
+  tmp.data <- t(log2(cpm(dge.data_Normalization_dispersions[genes,])+1))
+  tmp.data <- cpm(dge.data_Normalization_dispersions[genes,], log = TRUE, prior.count = 1)
+  tmp.data <- as.data.frame(t(tmp.data))
+  colnames(tmp.data) <- genes
+  tmp.data <- tmp.data %>%
+    rownames_to_column("sample") %>%
+    left_join(sample.description_raw_data, by = "sample") %>%
+    pivot_longer(cols = genes, names_to = "gene", values_to = "log2_cpm")
+# creating a average for each range
+  avg.data <- tmp.data %>%
+    group_by(Vern, Pop, gene) %>%
+    summarise(
+      mean_log2_cpm = mean(log2_cpm),
+      se = sd(log2_cpm) / sqrt(n()),  # Calculate standard error
+      .groups = 'drop'
+    )
+  
+  # delete the "#" below if you want to see errorbar
+   pl <- ggplot(avg.data, aes(x = Vern, y = mean_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points
+    geom_line() +  # Connects the points with a line
+    #geom_errorbar(aes(ymin = mean_log2_cpm - se, ymax = mean_log2_cpm + se), width = 0.2) + 
+    facet_wrap(~ gene) +
+    ylab("Average log2(cpm)") +
+    xlab("Genotype") +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+  return(pl)
+}
+plotDE_line("Sdiv_ptg000001l_0001-R",dge.data_Normalization_dispersions,sample.description_data)
+plotDE_line(rownames(Pop_Vern_gene)[1:3],dge.data_Normalization_dispersions,sample.description_data)
+
+```
+```
 
 
 subset bhr single comparsion v0 vs v1
