@@ -145,7 +145,7 @@ Pop_Vern_gene
 Transcriptional
 ```{r}
 library(tibble)
-plotDE <- function(genes, dge.data_Normalization_dispersions, sample.description_raw_data) {
+plotDE_boxplot <- function(genes, dge.data_Normalization_dispersions, sample.description_raw_data) {
   require(ggplot2)
   tmp.data <- t(log2(cpm(dge.data_Normalization_dispersions[genes,])+1))
   tmp.data <- tmp.data %>%
@@ -161,21 +161,20 @@ plotDE <- function(genes, dge.data_Normalization_dispersions, sample.description
   pl + theme(axis.text.x  = element_text(angle=45, vjust=1,hjust=1))
 }
 
-plotDE("Sdiv_ptg000001l_0001-R",dge.data_Normalization_dispersions,sample.description_data)
-plotDE(rownames(Pop_Vern_gene)[1:3],dge.data_Normalization_dispersions,sample.description_data)
+#Example testing
+plotDE_boxplot("Sdiv_ptg000001l_0001-R",dge.data_Normalization_dispersions,sample.description_data)
+plotDE_boxplot(rownames(Pop_Vern_gene)[1:3],dge.data_Normalization_dispersions,sample.description_data)
 
 
 ```
 
 ```{r}
 
-```{r}
 library(tibble)
 library(ggplot2)
 library(dplyr)
 
 plotDE_line <- function(genes, dge.data_Normalization_dispersions, sample.description_raw_data) {
-  tmp.data <- t(log2(cpm(dge.data_Normalization_dispersions[genes,])+1))
   tmp.data <- cpm(dge.data_Normalization_dispersions[genes,], log = TRUE, prior.count = 1)
   tmp.data <- as.data.frame(t(tmp.data))
   colnames(tmp.data) <- genes
@@ -204,11 +203,15 @@ plotDE_line <- function(genes, dge.data_Normalization_dispersions, sample.descri
 
   return(pl)
 }
-plotDE_line("Sdiv_ptg000001l_0001-R",dge.data_Normalization_dispersions,sample.description_data)
-plotDE_line(rownames(Pop_Vern_gene)[1:3],dge.data_Normalization_dispersions,sample.description_data)
+#FLC gene
+plotDE_line("Sdiv_ptg000009l_0614-R",dge.data_Normalization_dispersions,sample.description_data)
+plotDE_line("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sample.description_data)
+
+plotDE_boxplot("Sdiv_ptg000009l_0614-R",dge.data_Normalization_dispersions,sample.description_data)
+plotDE_boxplot("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sample.description_data)
 
 ```
-```
+
 
 
 subset bhr single comparsion v0 vs v1
