@@ -212,6 +212,53 @@ plotDE_boxplot("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sampl
 
 ```
 
+t -test for v2 from plotDE_line
+
+```{r}
+
+#Average gene and t test for FLC Sdiv_ptg000009l_0614
+tmp.data_Sdiv_ptg000009l_0614 <- cpm(dge.data_Normalization_dispersions["Sdiv_ptg000009l_0614-R",], log = TRUE, prior.count = 1)
+tmp.data_Sdiv_ptg000009l_0614 <- as.data.frame(t(tmp.data_Sdiv_ptg000009l_0614))
+colnames(tmp.data_Sdiv_ptg000009l_0614) <- "Sdiv_ptg000009l_0614-R"
+tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+    rownames_to_column("sample") %>%
+    left_join(sample.description_raw_data, by = "sample") %>%
+    pivot_longer(cols = "Sdiv_ptg000009l_0614-R", names_to = "gene", values_to = "log2_cpm")
+tmp.data_Sdiv_ptg000009l_0614 <- left_join(tmp.data_Sdiv_ptg000009l_0614, data, by = "sample")
+
+
+avg_log2_cpm_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+print(avg_log2_cpm_Sdiv_ptg000009l_0614)
+
+
+#Average gene and t test for FLC Sdiv_ptg000010l_2315-R
+
+
+tmp.data_Sdiv_ptg000010l_2315 <- cpm(dge.data_Normalization_dispersions["Sdiv_ptg000010l_2315-R",], log = TRUE, prior.count = 1)
+tmp.data_Sdiv_ptg000010l_2315 <- as.data.frame(t(tmp.data_Sdiv_ptg000010l_2315))
+colnames(tmp.data_Sdiv_ptg000010l_2315) <- "Sdiv_ptg000010l_2315-R"
+tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+    rownames_to_column("sample") %>%
+    left_join(sample.description_raw_data, by = "sample") %>%
+    pivot_longer(cols = "Sdiv_ptg000010l_2315-R", names_to = "gene", values_to = "log2_cpm")
+tmp.data_Sdiv_ptg000010l_2315 <- left_join(tmp.data_Sdiv_ptg000010l_2315, data, by = "sample")
+
+
+avg_log2_cpm_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+print(avg_log2_cpm_Sdiv_ptg000010l_2315)
+```
 
 
 subset bhr single comparsion v0 vs v1
