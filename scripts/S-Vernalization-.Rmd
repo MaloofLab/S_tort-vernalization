@@ -212,8 +212,15 @@ plotDE_boxplot("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sampl
 
 ```
 
-t -test for v2 from plotDE_line
+t -test for v2 from plotDE_line_Sdiv_ptg000009l_0614
 
+H0: (meanV2) = (meanNotV2)
+HA: (meanV2) ≠ (meanNotV2)
+
+Where (meanV2) is the mean log2(cpm) for the group where Vern = V2, and (meanNotV2)is the mean log2(cpm) for all other groups combined.
+
+
+P value is 0.006145, reject H0 suggesting there is a statistical significant on the V2 group on average, while using alpha = 0.05
 ```{r}
 
 #Average gene and t test for FLC Sdiv_ptg000009l_0614
@@ -236,6 +243,27 @@ avg_log2_cpm_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
 
 print(avg_log2_cpm_Sdiv_ptg000009l_0614)
 
+# T-Test
+# Create two groups
+group_V2_Sdiv_ptg000009l_0614 <- avg_log2_cpm_Sdiv_ptg000009l_0614$avg_log2_cpm[avg_log2_cpm_Sdiv_ptg000009l_0614$Vern == "v2"]
+
+
+group_not_V2_Sdiv_ptg000009l_0614 <- avg_log2_cpm_Sdiv_ptg000009l_0614$avg_log2_cpm[avg_log2_cpm_Sdiv_ptg000009l_0614$Vern != "v2"]
+
+
+t_test_result_Sdiv_ptg000009l_0614 <- t.test(group_V2_Sdiv_ptg000009l_0614, group_not_V2_Sdiv_ptg000009l_0614, alternative = "two.sided", var.equal = FALSE)
+
+print(t_test_result_Sdiv_ptg000009l_0614)
+```
+t -test for v2 from plotDE_line_Sdiv_ptg000010l_2315
+
+H0: (meanV2) = (meanNotV2)
+HA: (meanV2) ≠ (meanNotV2)
+
+Where (meanV2) is the mean log2(cpm) for the group where Vern = V2, and (meanNotV2)is the mean log2(cpm) for all other groups combined.
+
+The P value is 0.07004, therefore, we fail to reject H0 suggesting V2 group is not statistical significant than other groups, while using alpha = 0.05
+```{r}
 
 #Average gene and t test for FLC Sdiv_ptg000010l_2315-R
 
@@ -258,6 +286,18 @@ avg_log2_cpm_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
   )
 
 print(avg_log2_cpm_Sdiv_ptg000010l_2315)
+
+# T-Test
+# Create two groups
+group_V2_Sdiv_ptg000010l_2315 <- avg_log2_cpm_Sdiv_ptg000010l_2315$avg_log2_cpm[avg_log2_cpm_Sdiv_ptg000010l_2315$Vern == "v2"]
+
+
+group_not_V2_Sdiv_ptg000010l_2315 <- avg_log2_cpm_Sdiv_ptg000010l_2315$avg_log2_cpm[avg_log2_cpm_Sdiv_ptg000010l_2315$Vern != "v2"]
+
+
+t_test_result_Sdiv_ptg000010l_2315 <- t.test(group_V2_Sdiv_ptg000010l_2315, group_not_V2_Sdiv_ptg000010l_2315, alternative = "two.sided", var.equal = FALSE)
+
+print(t_test_result_Sdiv_ptg000010l_2315)
 ```
 
 
