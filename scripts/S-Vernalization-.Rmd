@@ -254,6 +254,7 @@ t_test_result_Sdiv_ptg000009l_0614 <- t.test(group_V2_Sdiv_ptg000009l_0614, grou
 
 print(t_test_result_Sdiv_ptg000009l_0614)
 ```
+
 t -test for v2 from plotDE_line_Sdiv_ptg000010l_2315
 
 H0: (meanV2) = (meanNotV2)
@@ -298,6 +299,55 @@ t_test_result_Sdiv_ptg000010l_2315 <- t.test(group_V2_Sdiv_ptg000010l_2315, grou
 
 print(t_test_result_Sdiv_ptg000010l_2315)
 ```
+V2 FLC Different Elevation Testing Sdiv_ptg000009l_0614
+```{r}
+library(dplyr)
+library(ggplot2)
+
+tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+  mutate(elevation = ifelse(Pop %in% c("tm", "ihl", "bhr", "kc"), "low", 
+                            ifelse(Pop %in% c("lv", "wl", "yo", "sq"), "high", NA)))
+
+V2_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+  filter(Vern == "v2")
+
+
+ggplot(V2_tmp.data_Sdiv_ptg000009l_0614, aes(x=elevation, y=log2_cpm)) +
+  geom_boxplot() +
+  labs(title="Boxplot of FLC level by Elevation and Vern",
+       x="Elevation",
+       y="Log2 CPM",
+       fill="Vern Group") +
+  theme_minimal()
+
+```
+
+
+V2 FLC Different Elevation Testing Sdiv_ptg000010l_2315
+```{r}
+library(dplyr)
+library(ggplot2)
+
+tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+  mutate(elevation = ifelse(Pop %in% c("tm", "ihl", "bhr", "kc"), "low", 
+                            ifelse(Pop %in% c("lv", "wl", "yo", "sq"), "high", NA)))
+
+V2_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+  filter(Vern == "v2")
+
+
+ggplot(V2_tmp.data_Sdiv_ptg000010l_2315, aes(x=elevation, y=log2_cpm)) +
+  geom_boxplot() +
+  labs(title="Boxplot of FLC level by Elevation and Vern",
+       x="Elevation",
+       y="Log2 CPM",
+       fill="Vern Group") +
+  theme_minimal()
+
+
+```
+```
+
 
 
 subset bhr single comparsion v0 vs v1
