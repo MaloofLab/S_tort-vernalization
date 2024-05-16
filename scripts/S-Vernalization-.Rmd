@@ -9,7 +9,7 @@ output: html_document
 
 Exercise 1. Loading the dataset (raw_data)
 ```{r}
-raw_data<-read.csv("~/Desktop/raw_counts.csv.gz")
+raw_data<-read.csv("../intermediate/raw_counts.csv.gz")
 ```
 
 
@@ -71,7 +71,7 @@ Exercise 6.Data Normalization
 sample.description_raw_data <-tibble(sample=colnames(raw_data)[-1])
 
 data <- sample.description_raw_data%>% mutate(
-    Pop = str_extract(sample,"bhr|ihl|kc|lv|sq|tm|wl|yo"), Vern = str_extract(sample, "v0|v1|v2|i0|i1|i2"),
+    Pop = str_extract(sample,"bhr|ihl|kc2|lv3|sq3|tm2|wl2|yo1"), Vern = str_extract(sample, "v0|v1|v2|i0|i1|i2"),
     group = str_c(Vern, Pop, sep = "_"))
 print(head(data))
 
@@ -192,15 +192,14 @@ plotDE_line <- function(genes, dge.data_Normalization_dispersions, sample.descri
     )
   
   # delete the "#" below if you want to see errorbar
-   pl <- ggplot(avg.data, aes(x = Vern, y = mean_log2_cpm, color = Pop, group = Pop)) +
+   pl <- ggplot(avg.data, aes(x = Vern, y = mean_log2_cpm, color = Pop, group = Pop, pch = Pop)) +
     geom_point() +  # Plots the averaged points
     geom_line() +  # Connects the points with a line
     #geom_errorbar(aes(ymin = mean_log2_cpm - se, ymax = mean_log2_cpm + se), width = 0.2) + 
     facet_wrap(~ gene) +
     ylab("Average log2(cpm)") +
     xlab("Genotype") +
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-
+     scale_color_viridis_d() 
   return(pl)
 }
 #FLC gene
