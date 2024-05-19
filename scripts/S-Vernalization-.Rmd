@@ -9,7 +9,8 @@ output: html_document
 
 Exercise 1. Loading the dataset (raw_data)
 ```{r}
-raw_data<-read.csv("../intermediate/raw_counts.csv.gz")
+raw_data <- read.csv("raw_counts.csv.gz")
+#raw_data<-read.csv("../intermediate/raw_counts.csv.gz")
 ```
 
 
@@ -299,6 +300,8 @@ t_test_result_Sdiv_ptg000010l_2315 <- t.test(group_V2_Sdiv_ptg000010l_2315, grou
 
 print(t_test_result_Sdiv_ptg000010l_2315)
 ```
+
+
 V2 FLC Different Elevation Testing Sdiv_ptg000009l_0614
 ```{r}
 library(dplyr)
@@ -346,7 +349,168 @@ ggplot(V2_tmp.data_Sdiv_ptg000010l_2315, aes(x=elevation, y=log2_cpm)) +
 
 
 ```
+
+Function for Separate graph Sdiv_ptg000010l_2315
+```{r}
+
+#V0I0 group
+V0I0_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+  filter(Vern == "v0" | Vern == "i0")
+
+V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V0I0_tmp.data_Sdiv_ptg000010l_2315 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+# Manually set the factor levels to control order
+V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern <- factor(V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern, 
+                                                      levels = c("v0", "i0"))
+
+
+ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points
+    geom_line() +  # Connects the points within each group with lines
+    labs(title = "Sdiv_ptg000010l_2315",
+      x = "Genotype",
+      y = "Mean log2(cpm) Expression"
+    ) +
+    scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
+
+
+#V1I1 group
+V1I1_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+  filter(Vern == "i1"| Vern == "v1")
+
+V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V1I1_tmp.data_Sdiv_ptg000010l_2315 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+# Manually set the factor levels to control order
+V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern <- factor(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern, 
+                                                      levels = c("v1", "i1"))
+
+ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points with different shapes per group
+    geom_line() +  # Connects the points within each group with lines
+    labs(title = "Sdiv_ptg000010l_2315",
+      x = "Genotype",
+      y = "Mean_log2_cpm Expression",
+    ) +
+    scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
+
+#V2I2 group
+V2I2_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
+  filter(Vern == "i2"| Vern == "v2")
+
+V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V2I2_tmp.data_Sdiv_ptg000010l_2315 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+# Manually set the factor levels to control order
+V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern <- factor(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern, 
+                                                      levels = c("v2", "i2"))
+
+ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points with different shapes per group
+    geom_line() +  # Connects the points within each group with lines
+    labs(title = "Sdiv_ptg000010l_2315",
+      x = "Genotype",
+      y = "Mean_log2_cpm Expression",
+    ) +
+    scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
+
+
 ```
+
+
+Function for Separate graph Sdiv_ptg000009l_0614
+```{r}
+
+#V0I0 group
+V0I0_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+  filter(Vern == "v0" | Vern == "i0")
+
+V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V0I0_tmp.data_Sdiv_ptg000009l_0614 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+# Manually set the factor levels to control order
+V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern <- factor(V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern, 
+                                                      levels = c("v0", "i0"))
+
+
+ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points
+    geom_line() +  # Connects the points within each group with lines
+    labs(
+      x = "Genotype",
+      y = "Mean log2(cpm) Expression"
+    ) +
+    scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
+
+
+#V1I1 group
+V1I1_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+  filter(Vern == "i1"| Vern == "v1")
+
+V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V1I1_tmp.data_Sdiv_ptg000009l_0614 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+# Manually set the factor levels to control order
+V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern <- factor(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern, 
+                                                      levels = c("v1", "i1"))
+
+ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points with different shapes per group
+    geom_line() +  # Connects the points within each group with lines
+    labs(
+      x = "Genotype",
+      y = "Mean_log2_cpm Expression",
+    ) +
+    scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
+
+#V2I2 group
+V2I2_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
+  filter(Vern == "i2"| Vern == "v2")
+
+V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V2I2_tmp.data_Sdiv_ptg000009l_0614 %>%
+  group_by(Pop, Vern) %>%
+  summarise(
+    avg_log2_cpm = mean(log2_cpm, na.rm = TRUE),  # Calculate average, ignoring NA values
+    .groups = 'drop'  # Drop the grouping structure after summarization
+  )
+
+# Manually set the factor levels to control order
+V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern <- factor(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern, 
+                                                      levels = c("v2", "i2"))
+
+ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+    geom_point() +  # Plots the averaged points with different shapes per group
+    geom_line() +  # Connects the points within each group with lines
+    labs(
+      x = "Genotype",
+      y = "Mean_log2_cpm Expression",
+    ) +
+    scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
+
+
+```
+
 
 
 
@@ -375,25 +539,25 @@ print(result_v0v1_bhr)
 
 subset yo single comparsion 
 ```{r}
-dge.data_Normalization.yo <- dge.data_Normalization [,sample.description_data $Pop=="yo"]
-dge.data_Normalization.yo$samples
+dge.data_Normalization.yo1 <- dge.data_Normalization [,sample.description_data $Pop=="yo1"]
+dge.data_Normalization.yo1$samples
 
-sample.description_data.yo <- sample.description_data %>%
-  filter(Pop == "yo")
-sample.description_data.yo
+sample.description_data.yo1 <- sample.description_data %>%
+  filter(Pop == "yo1")
+sample.description_data.yo1
 
-design.yo <- model.matrix(~Vern,data = sample.description_data.yo)
-rownames(design.yo) <- sample.description_data.yo$samples
-design.yo
+design.yo1 <- model.matrix(~Vern,data = sample.description_data.yo1)
+rownames(design.yo1) <- sample.description_data.yo1$samples
+design.yo1
 
 
-dge.data_Normalization_dispersions.yo <- estimateGLMCommonDisp(dge.data_Normalization.yo,design.yo,verbose = TRUE)
+dge.data_Normalization_dispersions.yo1 <- estimateGLMCommonDisp(dge.data_Normalization.yo1,design.yo1,verbose = TRUE)
 
-fit.yo <- glmFit(dge.data_Normalization_dispersions.yo,design.yo)
-gt.lrt.yo <- glmLRT(fit.yo,coef="Vernv1")
-result_v0v1.yo<-summary(decideTestsDGE(gt.lrt.yo,p=0.01))
+fit.yo1 <- glmFit(dge.data_Normalization_dispersions.yo1,design.yo1)
+gt.lrt.yo1 <- glmLRT(fit.yo1,coef="Vernv1")
+result_v0v1.yo1<-summary(decideTestsDGE(gt.lrt.yo1,p=0.01))
 
-print(result_v0v1.yo)
+print(result_v0v1.yo1)
 ```
 
 Loop for each population (vo vs v1)
