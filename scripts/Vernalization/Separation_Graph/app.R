@@ -3,6 +3,8 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 
+
+
 ui <- fluidPage(
   titlePanel("Dynamic Data Loading and Visualization with Group Selection"),
   sidebarLayout(
@@ -46,10 +48,7 @@ server <- function(input, output) {
       data <- data %>% filter(Vern %in% c("v2", "i2"))
     }
     
-    # Check if data is loaded and has columns 'Vern', 'log2_cpm', 'Pop'
-    if (!("Vern" %in% names(data) && "log2_cpm" %in% names(data) && "Pop" %in% names(data))) {
-      return(ggplot() + labs(title = "Data format not suitable or missing necessary columns"))
-    }
+  
     
     # Calculate the average log2_cpm for each combination of Vern and Pop
     average_data <- data %>%
