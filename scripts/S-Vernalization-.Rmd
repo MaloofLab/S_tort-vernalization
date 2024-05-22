@@ -9,8 +9,8 @@ output: html_document
 
 Exercise 1. Loading the dataset (raw_data)
 ```{r}
-raw_data <- read.csv("raw_counts.csv.gz")
-#raw_data<-read.csv("../intermediate/raw_counts.csv.gz")
+#raw_data <- read.csv("raw_counts.csv.gz")
+raw_data<-read.csv("../intermediate/raw_counts.csv.gz")
 ```
 
 
@@ -351,7 +351,8 @@ ggplot(V2_tmp.data_Sdiv_ptg000010l_2315, aes(x=elevation, y=log2_cpm)) +
 ```
 
 Function for Separate graph Sdiv_ptg000010l_2315
-```{r}
+```{r, fig.asp=1}
+library(patchwork)
 
 #V0I0 group
 V0I0_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
@@ -369,7 +370,7 @@ V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern <- factor(V0I0_avg_log2_cpm_Sdiv_ptg
                                                       levels = c("v0", "i0"))
 
 
-ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+pl2315_1 <- ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
     geom_point() +  # Plots the averaged points
     geom_line() +  # Connects the points within each group with lines
     labs(title = "Sdiv_ptg000010l_2315",
@@ -381,7 +382,7 @@ ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, c
 
 #V1I1 group
 V1I1_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
-  filter(Vern == "i1"| Vern == "v1")
+  filter(Vern == "v0" | Vern == "i1"| Vern == "v1")
 
 V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V1I1_tmp.data_Sdiv_ptg000010l_2315 %>%
   group_by(Pop, Vern) %>%
@@ -392,9 +393,9 @@ V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V1I1_tmp.data_Sdiv_ptg000010l_2315 %>%
 
 # Manually set the factor levels to control order
 V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern <- factor(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern, 
-                                                      levels = c("v1", "i1"))
+                                                      levels = c("v0", "v1", "i1"))
 
-ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+pl2315_2 <- ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(title = "Sdiv_ptg000010l_2315",
@@ -405,7 +406,7 @@ ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, c
 
 #V2I2 group
 V2I2_tmp.data_Sdiv_ptg000010l_2315 <- tmp.data_Sdiv_ptg000010l_2315 %>%
-  filter(Vern == "i2"| Vern == "v2")
+  filter(Vern == "v0" | Vern == "i2"| Vern == "v2")
 
 V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V2I2_tmp.data_Sdiv_ptg000010l_2315 %>%
   group_by(Pop, Vern) %>%
@@ -416,9 +417,9 @@ V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315 <- V2I2_tmp.data_Sdiv_ptg000010l_2315 %>%
 
 # Manually set the factor levels to control order
 V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern <- factor(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315$Vern, 
-                                                      levels = c("v2", "i2"))
+                                                      levels = c("v0", "v2", "i2"))
 
-ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+pl2315_3 <- ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(title = "Sdiv_ptg000010l_2315",
@@ -427,12 +428,12 @@ ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg_log2_cpm, c
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
 
-
+pl2315_1 / pl2315_2 / pl2315_3 + plot_layout(guides = "collect", axis_titles="collect")
 ```
 
 
 Function for Separate graph Sdiv_ptg000009l_0614
-```{r}
+```{r, fig.asp=1}
 
 #V0I0 group
 V0I0_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
@@ -450,7 +451,7 @@ V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern <- factor(V0I0_avg_log2_cpm_Sdiv_ptg
                                                       levels = c("v0", "i0"))
 
 
-ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+pl614_1 <- ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
     geom_point() +  # Plots the averaged points
     geom_line() +  # Connects the points within each group with lines
     labs(
@@ -462,7 +463,7 @@ ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, c
 
 #V1I1 group
 V1I1_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
-  filter(Vern == "i1"| Vern == "v1")
+  filter(Vern == "v0" | Vern == "i1"| Vern == "v1")
 
 V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V1I1_tmp.data_Sdiv_ptg000009l_0614 %>%
   group_by(Pop, Vern) %>%
@@ -473,9 +474,9 @@ V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V1I1_tmp.data_Sdiv_ptg000009l_0614 %>%
 
 # Manually set the factor levels to control order
 V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern <- factor(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern, 
-                                                      levels = c("v1", "i1"))
+                                                      levels = c("v0", "v1", "i1"))
 
-ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+pl614_2 <- ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(
@@ -486,7 +487,7 @@ ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, c
 
 #V2I2 group
 V2I2_tmp.data_Sdiv_ptg000009l_0614 <- tmp.data_Sdiv_ptg000009l_0614 %>%
-  filter(Vern == "i2"| Vern == "v2")
+  filter(Vern == "v0" | Vern == "i2"| Vern == "v2")
 
 V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V2I2_tmp.data_Sdiv_ptg000009l_0614 %>%
   group_by(Pop, Vern) %>%
@@ -497,9 +498,9 @@ V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614 <- V2I2_tmp.data_Sdiv_ptg000009l_0614 %>%
 
 # Manually set the factor levels to control order
 V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern <- factor(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614$Vern, 
-                                                      levels = c("v2", "i2"))
+                                                      levels = c("v0", "v2", "i2"))
 
-ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop)) +
+pl614_3 <- ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(
@@ -508,7 +509,7 @@ ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_log2_cpm, c
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
 
-
+pl614_1 / pl614_2 / pl614_3 + plot_layout(guides = "collect", axis_titles="collect")
 ```
 
 
