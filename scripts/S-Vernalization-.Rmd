@@ -9,8 +9,7 @@ output: html_document
 
 Exercise 1. Loading the dataset (raw_data)
 ```{r}
-#raw_data <- read.csv("raw_counts.csv.gz")
-raw_data<-read.csv("../intermediate/raw_counts.csv.gz")
+raw_data<-read.csv("../output/raw_counts.csv.gz")
 ```
 
 
@@ -512,6 +511,63 @@ pl614_3 <- ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_
 pl614_1 / pl614_2 / pl614_3 + plot_layout(guides = "collect", axis_titles="collect")
 ```
 
+Functions for separate graphs
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+
+
+plot_gene_average_expression <- function(data, gene_id, vern_levels, pop_levels) {
+  # Filtering and summarizing data
+  summarized_data <- data %>%
+    filter(Vern %in% vern_levels) %>%
+    group_by(Pop, Vern) %>%
+    summarise(avg_log2_cpm = mean(log2_cpm, na.rm = TRUE), .groups = 'drop') %>%
+    mutate(Vern = factor(Vern, levels = vern_levels))
+  
+
+  # Create the plot
+  plot <- ggplot(summarized_data, aes(x = Vern, y = avg_log2_cpm, color = Pop, group = Pop, shape = Pop)) +
+    geom_point() +  
+    geom_line() +  
+    labs(
+      title = paste("Average expression", gene_id),
+      x = "Genotype",
+      y = "Mean log2(cpm) Expression"
+    ) +
+    scale_color_viridis_d()  
+
+  return(plot)
+}
+```
+
+graphs using functions
+```{r, fig.asp=1}
+
+# Example "Sdiv_ptg000009l_0614"
+
+plot1_Sdiv_ptg000009l_0614 <- plot_gene_average_expression(tmp.data_Sdiv_ptg000009l_0614, "Sdiv_ptg000009l_0614", c("v0", "i0"), unique(tmp.data_Sdiv_ptg000009l_0614$Pop))
+plot2_Sdiv_ptg000009l_0614 <- plot_gene_average_expression(tmp.data_Sdiv_ptg000009l_0614, "Sdiv_ptg000009l_0614", c("v0", "v1", "i1"), unique(tmp.data_Sdiv_ptg000009l_0614$Pop))
+plot3_Sdiv_ptg000009l_0614 <- plot_gene_average_expression(tmp.data_Sdiv_ptg000009l_0614, "Sdiv_ptg000009l_0614", c("v0", "v2", "i2"), unique(tmp.data_Sdiv_ptg000009l_0614$Pop))
+
+final_plot_Sdiv_ptg000009l_0614 <- plot1_Sdiv_ptg000009l_0614 / plot2_Sdiv_ptg000009l_0614 / plot3_Sdiv_ptg000009l_0614 + plot_layout(guides = "collect") + plot_annotation(title = " Gene Sdiv_ptg000009l_0614")
+
+print(final_plot_Sdiv_ptg000009l_0614)
+
+
+# Example Sdiv_ptg000010l_2315
+
+plot1_Sdiv_ptg000010l_2315 <- plot_gene_average_expression(tmp.data_Sdiv_ptg000010l_2315, "Sdiv_ptg000010l_2315", c("v0", "i0"), unique(tmp.data_Sdiv_ptg000010l_2315$Pop))
+plot2_Sdiv_ptg000010l_2315 <- plot_gene_average_expression(tmp.data_Sdiv_ptg000010l_2315, "Sdiv_ptg000010l_2315", c("v0", "v1", "i1"), unique(tmp.data_Sdiv_ptg000010l_2315$Pop))
+plot3_Sdiv_ptg000010l_2315 <- plot_gene_average_expression(tmp.data_Sdiv_ptg000010l_2315, "Sdiv_ptg000010l_2315", c("v0", "v2", "i2"), unique(tmp.data_Sdiv_ptg000010l_2315$Pop))
+
+final_plot_Sdiv_ptg000010l_2315 <- plot1_Sdiv_ptg000010l_2315 / plot2_Sdiv_ptg000010l_2315 / plot3_Sdiv_ptg000010l_2315 + plot_layout(guides = "collect") + plot_annotation(title = " Gene Sdiv_ptg000010l_2315")
+
+print(final_plot_Sdiv_ptg000010l_2315)
+
+```
 
 
 
