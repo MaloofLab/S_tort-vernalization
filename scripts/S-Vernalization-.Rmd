@@ -2,7 +2,9 @@
 title: "temporary Vernalization 04 file"
 author: "XinYu Zhang"
 date: "2023-11-08"
-output: html_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 
@@ -10,14 +12,6 @@ output: html_document
 Exercise 1. Loading the dataset (raw_data)
 ```{r}
 raw_data<-read.csv("../output/raw_counts.csv.gz")
-```
-
-
-Exercise 3.Fix the column names by removing "." because “.” is a wildcard character.
-```{r}
-library(stringr)
-colnames(raw_data) <- str_remove(colnames(raw_data), fixed("."))
-colnames(raw_data)
 ```
 
 
@@ -32,12 +26,10 @@ raw_data_long_format <- raw_data %>%
   pivot_longer(c(-geneID), names_to="sample", values_to="count")
 
 #Make a histogram
-ggplot(raw_data_long_format, aes(x = count)) +
+ggplot(raw_data_long_format, aes(x = log2(count))) +
   geom_histogram(bins = 10, fill = "blue", color = "black") +
-  xlim(c(0, 1000)) + 
   theme_minimal() +
-  labs(title = "Histogram of Counts within Specified Range", x = "Count", y = "Frequency")
-#Conclusion: Non-normal distribution
+  labs(title = "Histogram of log2(Counts)", x = "Count", y = "Frequency")
 
 ```
 
@@ -58,8 +50,8 @@ raw_data_limited <- raw_data[1:1000, -which(colnames(raw_data) == "geneID")]
 par(mar=c(4, 4, 2, 2))
 #pairs(raw_data_limited) Large gra
 raw_data_cor_table <- cor(raw_data_limited, use = "complete.obs")
-print(raw_data_cor_table)#correlation table
 
+raw_data_cor_table[1:5, 1:5]
 
 
 raw_data_cor_table %>% gplots::heatmap.2(dendrogram="row", trace = "none", col=viridis::viridis(25, begin=.25), margins=c(7,8))
@@ -99,7 +91,13 @@ dim(dge.data_Normalization)
 dge.data_Normalization <- calcNormFactors(dge.data_Normalization, method = "TMM")
 dge.data_Normalization$sample # look at the normalization factors
 
-plotMDS(dge.data_Normalization, method = "bcv") 
+mds <- plotMDS(dge.data_Normalization, top = 5000, plot = FALSE, gene.selection = "common") 
+
+mds <- cbind(sample.description_data, dim1=mds@.Data[[9]], dim2=mds@.Data[[10]])
+
+mds %>% ggplot(aes(x=dim1, y=dim2, color=Pop, pch=Vern)) +
+  geom_point() +
+  ggtitle("MDS plot, 5000 most variable genes")
 ```
 
 ```{r}
@@ -121,29 +119,31 @@ data_Normalization_log <- log2(data_Normalization[,-1]+1)
 
 design <- model.matrix(~Pop+Vern,data = sample.description_data)
 rownames(design) <- sample.description_data$sample
-design
+
+head(design)
 
 
 dge.data_Normalization_dispersions <- estimateGLMCommonDisp(dge.data_Normalization,design,verbose = TRUE)
-dge.data_Normalization_dispersions <- estimateGLMTrendedDisp(dge.data_Normalization_dispersions,design)
+#dge.data_Normalization_dispersions <- estimateGLMTrendedDisp(dge.data_Normalization_dispersions,design)
 dge.data_Normalization_dispersions <-estimateGLMTagwiseDisp(dge.data_Normalization_dispersions,design)
 plotBCV(dge.data_Normalization_dispersions) 
 ```
 
-```{r}
+```{r,  eval=FALSE, echo=FALSE}
 fit <- glmFit (dge.data_Normalization_dispersions,design)
 gt.lrt <- glmLRT(fit,coef="Vernv1")
 topTags(gt.lrt)
-summary(decideTestsDGE(gt.lrt,p.value=0.01))
+summary(decideTests(gt.lrt,p.value=0.01))
 
 Pop_Vern_gene <- topTags(gt.lrt,n = Inf,p.value = 0.01)$table
-Pop_Vern_gene
+dim(Pop_Vern_gene)
+head(Pop_Vern_gene)
 
 ```
 
 
 Transcriptional
-```{r}
+```{r,  eval=FALSE, echo=FALSE}
 library(tibble)
 plotDE_boxplot <- function(genes, dge.data_Normalization_dispersions, sample.description_raw_data) {
   require(ggplot2)
@@ -206,8 +206,8 @@ plotDE_line <- function(genes, dge.data_Normalization_dispersions, sample.descri
 plotDE_line("Sdiv_ptg000009l_0614-R",dge.data_Normalization_dispersions,sample.description_data)
 plotDE_line("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sample.description_data)
 
-plotDE_boxplot("Sdiv_ptg000009l_0614-R",dge.data_Normalization_dispersions,sample.description_data)
-plotDE_boxplot("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sample.description_data)
+#plotDE_boxplot("Sdiv_ptg000009l_0614-R",dge.data_Normalization_dispersions,sample.description_data)
+#plotDE_boxplot("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sample.description_data)
 
 ```
 
@@ -373,7 +373,7 @@ pl2315_1 <- ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg
     geom_point() +  # Plots the averaged points
     geom_line() +  # Connects the points within each group with lines
     labs(title = "Sdiv_ptg000010l_2315",
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean log2(cpm) Expression"
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
@@ -398,7 +398,7 @@ pl2315_2 <- ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(title = "Sdiv_ptg000010l_2315",
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean_log2_cpm Expression",
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
@@ -422,7 +422,7 @@ pl2315_3 <- ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000010l_2315, aes(x = Vern, y = avg
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(title = "Sdiv_ptg000010l_2315",
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean_log2_cpm Expression",
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
@@ -454,7 +454,7 @@ pl614_1 <- ggplot(V0I0_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_
     geom_point() +  # Plots the averaged points
     geom_line() +  # Connects the points within each group with lines
     labs(
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean log2(cpm) Expression"
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
@@ -479,7 +479,7 @@ pl614_2 <- ggplot(V1I1_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean_log2_cpm Expression",
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
@@ -503,7 +503,7 @@ pl614_3 <- ggplot(V2I2_avg_log2_cpm_Sdiv_ptg000009l_0614, aes(x = Vern, y = avg_
     geom_point() +  # Plots the averaged points with different shapes per group
     geom_line() +  # Connects the points within each group with lines
     labs(
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean_log2_cpm Expression",
     ) +
     scale_color_viridis_d()  # Apply the viridis discrete color scale for aesthetic mapping
@@ -534,7 +534,7 @@ plot_gene_average_expression <- function(data, gene_id, vern_levels, pop_levels)
     geom_line() +  
     labs(
       title = paste("Average expression", gene_id),
-      x = "Genotype",
+      x = "Treatment",
       y = "Mean log2(cpm) Expression"
     ) +
     scale_color_viridis_d()  
@@ -589,7 +589,7 @@ dge.data_Normalization_dispersions.bhr <- estimateGLMCommonDisp(dge.data_Normali
 
 fit.bhr <- glmFit(dge.data_Normalization_dispersions.bhr,design.bhr)
 gt.lrt.bhr <- glmLRT(fit.bhr,coef="Vernv1")
-result_v0v1_bhr<-summary(decideTestsDGE(gt.lrt.bhr,p=0.01))
+result_v0v1_bhr<-summary(decideTests(gt.lrt.bhr,p=0.01))
 print(result_v0v1_bhr)
 ```
 
@@ -612,7 +612,7 @@ dge.data_Normalization_dispersions.yo1 <- estimateGLMCommonDisp(dge.data_Normali
 
 fit.yo1 <- glmFit(dge.data_Normalization_dispersions.yo1,design.yo1)
 gt.lrt.yo1 <- glmLRT(fit.yo1,coef="Vernv1")
-result_v0v1.yo1<-summary(decideTestsDGE(gt.lrt.yo1,p=0.01))
+result_v0v1.yo1<-summary(decideTests(gt.lrt.yo1,p=0.01))
 
 print(result_v0v1.yo1)
 ```
@@ -654,7 +654,7 @@ for (pop in pop_groups) {
   gt.lrt_pop <- glmLRT(fit_pop, coef = "Vernv1")
   
   # Summarize the results for each population (up / down regulation)
-  result_v0v1_pop <- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  result_v0v1_pop <- summary(decideTests(gt.lrt_pop, p = 0.01))
   description <- "v0v1 comparison for population: " 
   results_list[[pop]] <- list(
   Description = paste(description, pop, sep=""),
@@ -704,7 +704,7 @@ for (pop in pop_groups) {
   gt.lrt_pop <- glmLRT(fit_pop, coef = "Vernv2")
   
   # Summarize the results for each population (up / down regulation)
-  result_v0v2_pop <- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  result_v0v2_pop <- summary(decideTests(gt.lrt_pop, p = 0.01))
   description <- "v0v2 comparison for population: " 
   results_list[[pop]] <- list(
   Description = paste(description, pop, sep=""),
@@ -761,7 +761,7 @@ for (pop in pop_groups) {
   # Conduct likelihood ratio test for each population
   gt.lrt_pop <- glmLRT(fit_pop, coef = "Vernv2")
   # Summarize the results for each population (up / down regulation)
-  result_v1v2_pop <- summary(decideTestsDGE(gt.lrt_pop, p = 0.01))
+  result_v1v2_pop <- summary(decideTests(gt.lrt_pop, p = 0.01))
   description <- "v1v2 comparison for population: " 
   results_list[[pop]] <- list(
     Description = paste(description, pop, sep=""),
