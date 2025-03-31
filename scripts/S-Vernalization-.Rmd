@@ -211,6 +211,22 @@ plotDE_line("Sdiv_ptg000010l_2315-R",dge.data_Normalization_dispersions,sample.d
 
 ```
 
+writeout a table for FLC expression
+```{r}
+FLCs <- c("Sdiv_ptg000009l_0614-R", "Sdiv_ptg000010l_2315-R")
+
+cpm(dge.data_Normalization_dispersions[FLCs,], log = TRUE, prior.count = 1) %>%
+  t() %>%
+  as_tibble(rownames = "sample") %>%
+  left_join(sample.description_data) %>%
+  write.csv("../output/FLC_log2cpm.csv")
+
+
+
+
+```
+
+
 t -test for v2 from plotDE_line_Sdiv_ptg000009l_0614
 
 H0: (meanV2) = (meanNotV2)
