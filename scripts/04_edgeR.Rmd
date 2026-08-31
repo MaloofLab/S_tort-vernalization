@@ -1,0 +1,125 @@
+---
+title: "04-EdgeR"
+output: html_document
+date: "2024-03-05"
+---
+
+# Creating Analysis Ready Data Files 
+```{r, message=FALSE}
+#Libraries
+library(tidyverse)
+library(edgeR)
+```
+
+```{r Loading Data}
+# Load Gene Expression Data
+counts <- read_csv('../output/raw_counts.csv.gz') 
+counts[1:10, 1:10]
+```
+
+```{r Sample Distribution}
+# Sample Distribution
+colnames(counts)[-1] %>%
+  str_remove("[0-9]$") %>%
+  table()
+```
+Create sample description
+```{r sample description}
+sample_description <- tibble(sample = colnames(counts)[-1],
+                             pop = str_remove(sample, "-.*"),
+                             mf = str_replace(sample, ".*-([0-9]*)_.*", "\\1"),
+                             trt = str_remove(sample, ".*_"),
+                             vern_length = str_remove(trt, "[a-z]"),
+                             stage = str_remove(trt, "[0-9]"),
+                             group = str_c(pop, trt, sep = "_")
+                             
+)
+
+sample_description
+
+write_csv(sample_description, "../input/sample_description.csv")
+```
+
+
+```{r, Expression Filtering}
+# Remove low expression genes
+# Need at least 10 reads in at least 3 samples
+counts <- counts[rowSums(counts[,-1] >= 10) >= 3,]
+```
+
+Create a base DGE object
+```{r Create DGE data}
+#We create a numeric matrix of our count data to serve as an input to DGElist.
+counts.matrix <- counts %>%
+  select(-geneID) %>%
+  as.matrix()
+rownames(counts.matrix) <- counts$geneID
+
+DGE.data <-
+  DGEList(counts = counts.matrix, group = sample_description$group)
+#We normalize the data in our DGElist object using the TMM method
+DGE.data <- calcNormFactors(DGE.data, method = "TMM")
+```
+
+Save TMM dataframe
+```{r TMM Data Saving}
+#Log 2 normalized count data for downstream processing
+#Not filtered for gene significance yet
+TMM_DATA <- cpm(DGE.data, log = T) %>%
+  data.frame() %>%
+  rownames_to_column(var = "geneID")
+write_csv(TMM_DATA,"../output/Vern_log2cpm.csv.gz")
+```
+
+## MDS plot
+
+```{r, fig.height=8}
+mds_data <- plotMDS(DGE.data, plot = FALSE)
+
+pl <- cbind(sample_description, x=mds_data$x, y=mds_data$y) %>%
+  ggplot(aes(x=x, y=y, color = pop, pch = trt)) +
+  geom_point()
+
+pl
+
+pl + facet_wrap(~pop, scales = "free")
+
+pl + facet_wrap(~trt, scales = "free")
+```
+
+
+## A simple DE analysis
+
+```{r}
+design <- model.matrix(~ 0 + pop*trt, data = sample_description)
+head(design)
+```
+
+No need for pre-computing dispersion with this method
+```{r}
+fit <- glmQLFit(DGE.data, design, robust = TRUE)
+plotQLDisp(fit)
+```
+
+```{r}
+results.pop <- glmQLFTest(fit, coef = str_subset(colnames(design), pattern = "pop")) # main and interaction effects
+summary(decideTests(results.pop))
+```
+
+
+```{r}
+results.trt <- glmQLFTest(fit, coef = str_subset(colnames(design), pattern = "trt")) # main and interaction effects
+summary(decideTests(results.trt))
+```
+
+
+```{r}
+results.interaction <- glmQLFTest(fit, coef = str_subset(colnames(design), pattern = ":"))
+summary(decideTests(results.interaction))
+```
+
+```{r}
+summary(decideTests(results))
+```
+
+
